@@ -1,15 +1,22 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 let totalRequests = 0;
 
-let server = http.createServer(function(request, response) {
+let server = http.createServer(function (request, response) {
     totalRequests++;
+    let filePath;
+    if (request.url == '/'){
+        filePath = path.join(__dirname, 'web-pages', 'index.html');
+    } else if (request.url == '/contacts'){
+        filePath = path.join(__dirname, 'web-pages', 'contacts.html');
+    } else {
+        response.writeHead(404);
+        filePath = path.join(__dirname, 'web-pages', 'error.html');
+    };
 
-    response.end(`
-    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%;">
-    <h1>Welcome to my server!</h1>
-    <h2>Total requests since the server startup: ${totalRequests}</h2>
-    </div>
-    `);
+    let content = fs.readFileSync(filePath);
+    response.end(content);
 });
 
 console.log('server online');
