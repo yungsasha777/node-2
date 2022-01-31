@@ -1,30 +1,48 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-let totalRequests = 0;
+const port = 3000;
 
-let server = http.createServer(function (request, response) {
-    totalRequests++;
+let htmlfile;
+let cssfile;
+
+uptodate();
+
+function uptodate() {
+    fs.readFile('./web-pages/style.css', function(err, html) {
+        if (err) {
+            throw err;
+        }
+        cssfile = html;
+    });
+
+    setTimeout(uptodate, 1000);
+};
+
+const server = http.createServer(function(req, res) {
     let filePath;
-    let stylePath;
-    if (request.url == '/'){
+
+    if (req.url.indexOf('.css') != -1) {
+        res.writeHead(200, { 'Content-Type': 'text/css' });
+        res.write(cssfile);
+        res.end();
+        return;
+    }
+
+    if (req.url == '/') {
+        res.writeHeader(200, { "Content-Type": "text/html" });
         filePath = path.join(__dirname, 'web-pages', 'index.html');
-        stylePath = path.join(__dirname, 'web-pages', 'style.css');
-    } else if (request.url == '/contacts'){
+    } else if (req.url == '/contacts') {
+        res.writeHeader(200, { "Content-Type": "text/html" });
         filePath = path.join(__dirname, 'web-pages', 'contacts.html');
-        stylePath = path.join(__dirname, 'web-pages', 'style.css');
     } else {
-        response.writeHead(404);
+        res.writeHeader(404, { "Content-Type": "text/html" });
         filePath = path.join(__dirname, 'web-pages', 'error.html');
-        stylePath = path.join(__dirname, 'web-pages', 'style.css');
-    };
+    }
 
     let content = fs.readFileSync(filePath);
-    let css = fs.readFileSync(__dirname + '/web-pages' + '/style.css', 'utf8')
-    response.writeHead(200, {'Content-Type': 'text/css'});
-    response.write(css);
-    response.end(content);
+    res.end(content);
 });
 
-console.log('server online');
-server.listen(3000);
+server.listen(port);
+console.log(`server running at http://localhost:${port}`)
