@@ -1,0 +1,1 @@
+document.getElementById('requests').innerText = 'Total requests since the server startup: 91';

@@ -5,6 +5,10 @@ const port = 3000;
 
 let htmlfile;
 let cssfile;
+let jsfile;
+
+let totalRequests = fs.readFileSync('./totalRequests.txt', 'utf-8');
+console.log(totalRequests);
 
 uptodate();
 
@@ -16,15 +20,34 @@ function uptodate() {
         cssfile = html;
     });
 
+    fs.readFile('./web-pages/script.js', 'utf-8', function(err, html) {
+        if (err) {
+            throw err;
+        }
+        jsfile = html;
+    });
+
     setTimeout(uptodate, 1000);
 };
 
 const server = http.createServer(function(req, res) {
     let filePath;
 
+    totalRequests = fs.readFileSync('./totalRequests.txt', 'utf-8');
+    totalRequests++;
+    fs.writeFileSync('./totalRequests.txt', totalRequests.toString());
+    fs.writeFileSync('./web-pages/script.js', `document.getElementById('requests').innerText = 'Total requests since the server startup: ${totalRequests}';`);
+
     if (req.url.indexOf('.css') != -1) {
         res.writeHead(200, { 'Content-Type': 'text/css' });
         res.write(cssfile);
+        res.end();
+        return;
+    }
+
+    if (req.url.indexOf('.js') != -1) {
+        res.writeHead(200, { 'Content-Type': 'text/js' });
+        res.write(jsfile);
         res.end();
         return;
     }
