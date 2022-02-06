@@ -69,19 +69,7 @@ const server = http.createServer(async(req, res) => {
             });
 
             req.on('end', async() => {
-                searchParams = new URLSearchParams(data);
-                console.log(searchParams.get('author'));
-                console.log(searchParams.get('content'));
-
-                let htmlToAppend = `
-                <div class="article">
-                    <h3>Author: ${searchParams.get('author')}</h3>
-                    <p>${searchParams.get('content')}</p>
-                </div>
-                `;
-
-                await fs.appendFileSync('./web-pages/index.html', htmlToAppend);
-                await res.end();
+                require('./modules/formSaveUpload').callback();
             });
             await res.writeHead(302, { 'Location': '/' });
         } catch (err) { console.log(err) };
