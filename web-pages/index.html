@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-<html>
 
-<head>
-    <link content-type="text/css" rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
-</head>
+<link content-type="text/css" rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
 
-<body>
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%;">
+    <h1>Welcome to my server!</h1>
+    <h2 id="requests">Total requests since the server startup: 0</h2>
+
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%;">
-        <h1>Welcome to my server!</h1>
-        <h2 id="requests">Total requests since the server startup: 0</h2>
+        <h2>Add a new article:</h2>
     </div>
-</body>
-
-</html>
+    <form action="/add" method="POST">
+        <input type="text" name="author" placeholder="Author">
+        <textarea type="text" name="content" id="content"></textarea>
+        <input type="submit" value="button">
+    </form>
+</div>
+                <div class="article">
+                    <h3>Author: anonymmous hacker hacker</h3>
+                    <p>i eat fast cake times</p>
+                </div>
+                
+                <div class="article">
+                    <h3>Author: anonymmous hacker hacker</h3>
+                    <p>i eat fast cake times</p>
+                </div>
+                
+                <div class="article">
+                    <h3>Author: asdfads</h3>
+                    <p>asdfasd</p>
+                </div>
+                

@@ -6,6 +6,7 @@ const port = 3000;
 let htmlfile;
 let cssfile;
 let jsfile;
+let data = '';
 
 let totalRequests = fs.readFileSync('./totalRequests.txt', 'utf-8');
 console.log(totalRequests);
@@ -30,7 +31,7 @@ function uptodate() {
     setTimeout(uptodate, 1000);
 };
 
-const server = http.createServer(function(req, res) {
+const server = http.createServer(async(req, res) => {
     let filePath;
 
     totalRequests = fs.readFileSync('./totalRequests.txt', 'utf-8');
@@ -58,10 +59,37 @@ const server = http.createServer(function(req, res) {
     } else if (req.url == '/contacts') {
         res.writeHeader(200, { "Content-Type": "text/html" });
         filePath = path.join(__dirname, 'web-pages', 'contacts.html');
+    } else if (req.url == '/add' && req.method == 'POST') {
+        filePath = path.join(__dirname, 'web-pages', 'index.html');
+        try {
+            data = '';
+
+            req.on('data', async(chunk) => {
+                data += chunk;
+            });
+
+            req.on('end', async() => {
+                searchParams = new URLSearchParams(data);
+                console.log(searchParams.get('author'));
+                console.log(searchParams.get('content'));
+
+                let htmlToAppend = `
+                <div class="article">
+                    <h3>Author: ${searchParams.get('author')}</h3>
+                    <p>${searchParams.get('content')}</p>
+                </div>
+                `;
+
+                await fs.appendFileSync('./web-pages/index.html', htmlToAppend);
+                await res.end();
+            });
+            await res.writeHead(302, { 'Location': '/' });
+        } catch (err) { console.log(err) };
     } else {
         res.writeHeader(404, { "Content-Type": "text/html" });
         filePath = path.join(__dirname, 'web-pages', 'error.html');
-    }
+    };
+
 
     let content = fs.readFileSync(filePath);
     res.end(content);
